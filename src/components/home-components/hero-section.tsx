@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, SyntheticEvent } from "react";
 
 export default function HeroSection() {
   const videos = ["/videos/hero-home/1.mp4"];
@@ -40,20 +40,37 @@ export default function HeroSection() {
           </span>
         </h1>
         <p className="text-lg md:text-xl text-gray-200 mb-8">
-          Build modern apps with speed and style. Start your journey with us today.
+          Build modern apps with speed and style. Start your journey with us
+          today.
         </p>
 
         <div className="flex justify-end space-x-6 text-white text-2xl">
-          <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
+          <a
+            href="https://facebook.com"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <i className="fab fa-facebook hover:text-yellow-500"></i>
           </a>
-          <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
+          <a
+            href="https://twitter.com"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <i className="fab fa-twitter hover:text-yellow-500 "></i>
           </a>
-          <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
+          <a
+            href="https://instagram.com"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <i className="fab fa-instagram hover:text-yellow-500"></i>
           </a>
-          <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
+          <a
+            href="https://linkedin.com"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <i className="fab fa-linkedin hover:text-yellow-500                                     "></i>
           </a>
         </div>
