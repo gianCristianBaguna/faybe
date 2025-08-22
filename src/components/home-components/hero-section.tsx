@@ -1,34 +1,62 @@
-// components/Hero.tsx
-import Image from "next/image";
-import Link from "next/link";
+"use client";
+
+import { useState, useEffect } from "react";
 
 export default function HeroSection() {
+  const videos = ["/videos/hero-home/1.mp4"];
+
+  const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % videos.length);
+    }, 10000);
+    return () => clearInterval(interval);
+  }, [videos.length]);
+
   return (
-    <section className="relative h-screen flex items-center justify-center">
-      {/* Background Image */}
-      <Image
-        src="/hero-page-img/1.jpg"
-        alt="Hero Background"
-        layout="fill"
-        objectFit="cover"
-        className="absolute inset-0 -z-10"
-        priority
-      />
+    <section className="relative h-screen flex items-center justify-end overflow-hidden">
+      {videos.map((src, index) => (
+        <video
+          key={index}
+          autoPlay
+          muted
+          loop
+          playsInline
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out ${
+            index === current ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          <source src={src} type="video/mp4" />
+        </video>
+      ))}
 
-      {/* Overlay (dark tint for readability) */}
-      <div className="absolute inset-0 bg-black/50 -z-10" />
+      <div className="absolute inset-0 bg-black/50" />
 
-      {/* Content */}
-      <div className="text-center px-6 md:px-12">
-        <h1 className="text-4xl md:text-6xl font-bold text-white mt-100">
-          <span className="text-[2rem]  bg-gradient-to-r from-yellow-100 via-yellow-400 to-yellow-700 bg-clip-text text-transparent drop-shadow-[0_2px_2px_rgba(0,0,0,0.7)]">
+      <div className="text-right px-6 md:px-12 relative z-10 max-w-xl mr-10 md:mr-20 md:mt-120">
+        <h1 className="text-4xl md:text-6xl font-bold text-white">
+          <span className="text-[2rem] bg-gradient-to-r from-yellow-100 via-yellow-400 to-yellow-700 bg-clip-text text-transparent drop-shadow-[0_2px_2px_rgba(0,0,0,0.7)]">
             FAYBE
           </span>
         </h1>
-        <p className="text-lg md:text-xl text-gray-200 mb-8 max-w-2xl mx-auto">
-          Build modern apps with speed and style. Start your journey with us
-          today.
+        <p className="text-lg md:text-xl text-gray-200 mb-8">
+          Build modern apps with speed and style. Start your journey with us today.
         </p>
+
+        <div className="flex justify-end space-x-6 text-white text-2xl">
+          <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
+            <i className="fab fa-facebook hover:text-yellow-500"></i>
+          </a>
+          <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
+            <i className="fab fa-twitter hover:text-yellow-500 "></i>
+          </a>
+          <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
+            <i className="fab fa-instagram hover:text-yellow-500"></i>
+          </a>
+          <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
+            <i className="fab fa-linkedin hover:text-yellow-500                                     "></i>
+          </a>
+        </div>
       </div>
     </section>
   );

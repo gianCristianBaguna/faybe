@@ -11,7 +11,6 @@ export default function Navbar() {
   return (
     <nav className="fixed top-0 left-0 w-full z-50 bg-transparent ">
       <div className="max-w-7xl mx-auto py-4 px-6 flex items-center justify-between ml-0">
-        
         {/* Logo + Nav Links (Left side) */}
         <div className="flex items-center gap-10">
           {/* Logo */}
@@ -26,14 +25,20 @@ export default function Navbar() {
           </Link>
 
           {/* Nav Links (Desktop Only) */}
-          <div className="hidden md:flex gap-8">
-            <Link href="/" className="text-white hover:text-gray-300">
+          <div className="hidden md:flex gap-8 max-w-5xl mx-auto">
+            <Link href="/" className="text-white hover:text-yellow-500 ">
               Home
             </Link>
-            <Link href="/about" className="text-white hover:text-gray-300">
+            <Link
+              href="/pages/about"
+              className="text-white hover:text-yellow-500  px-10"
+            >
               About
             </Link>
-            <Link href="/contact" className="text-white hover:text-gray-300">
+            <Link
+              href="/pages/contact"
+              className="text-white hover:text-yellow-500 "
+            >
               Contact
             </Link>
           </div>
@@ -41,7 +46,6 @@ export default function Navbar() {
 
         {/* Right Side: Draft Button (Desktop) + Mobile Menu */}
         <div className="flex items-center gap-4">
-
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
