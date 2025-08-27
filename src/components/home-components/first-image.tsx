@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef } from "react";
-import { motion, useAnimation, useInView, useTransform, useScroll } from "framer-motion";
+import { motion, useAnimation, useInView, useScroll, useTransform } from "framer-motion";
 
 interface FirstImageProps {
   nextSectionId: string;
@@ -20,44 +20,56 @@ const images = [
 ];
 
 export default function FirstImage({ nextSectionId }: FirstImageProps) {
-  const controls = useAnimation();
   const sectionRef = useRef<HTMLElement | null>(null);
-  const isInView = useInView(sectionRef, { amount: 0.3 }); // Trigger when 30% in view
-  const { scrollYProgress } = useScroll();
+  const isInView = useInView(sectionRef, { amount: 0.3 });
+  const headerControls = useAnimation();
+  const imageControls = useAnimation();
+  const { scrollYProgress } = useScroll({ target: sectionRef });
+
+  // Scroll-based parallax for images
+  const getXTransform = (side: string) => {
+    if (side === "left") return useTransform(scrollYProgress, [0, 1], [-50, 0]);
+    if (side === "right") return useTransform(scrollYProgress, [0, 1], [50, 0]);
+    return useTransform(scrollYProgress, [0, 1], [0, 0]);
+  };
+  const getYTransform = (side: string) => {
+    if (side === "center") return useTransform(scrollYProgress, [0, 1], [40, 0]);
+    return useTransform(scrollYProgress, [0, 1], [0, 0]);
+  };
 
   useEffect(() => {
     if (isInView) {
-      controls.start({ opacity: 1, y: 0, transition: { duration: 0.8 } });
+      // Animate header first
+      headerControls.start({ opacity: 1, y: 0, transition: { duration: 0.8 } });
+
+      // Animate images sequentially
+      images.forEach((_, i) => {
+        imageControls.start((custom) => {
+          if (custom === i) {
+            return {
+              opacity: 1,
+              scale: 1,
+              y: 0,
+              x: 0,
+              transition: { delay: i * 0.15, duration: 0.6 },
+            };
+          }
+          return {};
+        });
+      });
     } else {
-      controls.start({ opacity: 0, y: 40, transition: { duration: 0.8 } });
+      headerControls.start({ opacity: 0, y: 40, transition: { duration: 0.5 } });
+      imageControls.start({ opacity: 0, scale: 0.95, y: 40 });
     }
-  }, [isInView, controls]);
-
-  // Function to return unique transforms per image
-  const getImageAnimation = (index: number, side: string) => {
-    let xTransform: import("framer-motion").MotionValue<number>;
-    let yTransform: import("framer-motion").MotionValue<number>;
-
-    if (side === "left") xTransform = useTransform(scrollYProgress, [0.1 * index, 0.3 + 0.1 * index], [-100, 0]);
-    else if (side === "right") xTransform = useTransform(scrollYProgress, [0.1 * index, 0.3 + 0.1 * index], [100, 0]);
-    else xTransform = useTransform(scrollYProgress, [0, 1], [0, 0]);
-
-    if (side === "center") yTransform = useTransform(scrollYProgress, [0.1 * index, 0.3 + 0.1 * index], [40, 0]);
-    else yTransform = useTransform(scrollYProgress, [0, 1], [0, 0]);
-
-    const scaleTransform = useTransform(scrollYProgress, [0.1 * index, 0.3 + 0.1 * index], [0.95, 1]);
-    const opacityTransform = useTransform(scrollYProgress, [0.05 * index, 0.5 + 0.05 * index], [0, 1]);
-
-    return { x: xTransform, y: yTransform, scale: scaleTransform, opacity: opacityTransform };
-  };
+  }, [isInView, headerControls, imageControls]);
 
   return (
     <main ref={sectionRef} className="relative min-h-screen bg-black overflow-hidden" id={nextSectionId}>
-      {/* Header with scroll-triggered animation */}
+      {/* Header */}
       <motion.div
         className="text-center py-12 px-4"
-        animate={controls}
         initial={{ opacity: 0, y: 40 }}
+        animate={headerControls}
       >
         <h1 className="text-3xl text-white">Making Your Aspirations Possible</h1>
         <p className="text-lg text-white italic tracking-wide max-w-3xl mx-auto leading-relaxed mt-4">
@@ -69,16 +81,21 @@ export default function FirstImage({ nextSectionId }: FirstImageProps) {
       <div className="w-full pb-20 p-20 md:p-5">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
           {images.map((img, i) => {
-            const animation = getImageAnimation(i, img.side);
             return (
               <motion.div
                 key={i}
+                custom={i}
                 className={img.span}
+                initial={{
+                  opacity: 0,
+                  y: 40,
+                  scale: 0.95,
+                  x: img.side === "left" ? -50 : img.side === "right" ? 50 : 0,
+                }}
+                animate={imageControls}
                 style={{
-                  x: animation.x,
-                  y: animation.y,
-                  scale: animation.scale,
-                  opacity: animation.opacity,
+                  x: getXTransform(img.side),
+                  y: getYTransform(img.side),
                 }}
               >
                 <Link href={img.href} className="block w-full h-full group">
