@@ -1,75 +1,69 @@
-"use client";
+"use client"
 
-import { useEffect, useState, useRef } from "react";
-import Image from "next/image";
+import { useEffect, useState } from "react"
+import { motion, AnimatePresence } from "framer-motion"
 
-export default function WeddingLazy() {
-  const [isVisible, setIsVisible] = useState(false);
-  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
-  const [isHidden, setIsHidden] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
+const bgImages = [
+  "/homescreen-second-img/1.jpg",
+  "/homescreen-second-img/2.jpg",
+  "/homescreen-second-img/3.jpg",
+  "/homescreen-second-img/4.jpg",
+  "/homescreen-second-img/5.jpg",
+]
 
+export default function Lazy() {
+  const [showOutro, setShowOutro] = useState(true)
+  const [currentBg, setCurrentBg] = useState(0)
+
+  // cycle images every 1s
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.1 }
-    );
+    const interval = setInterval(() => {
+      setCurrentBg((prev) => (prev + 1) % bgImages.length)
+    }, 800) // 👈 1 second per picture
+    return () => clearInterval(interval)
+  }, [])
 
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, []);
-
+  // outro after ~8s (5 images × 1s + extra time for text)
   useEffect(() => {
-    if (isVideoLoaded) {
-      const timer = setTimeout(() => setIsHidden(true), 4500); // slower fade
-      return () => clearTimeout(timer);
-    }
-  }, [isVideoLoaded]);
-
-  if (isHidden) return null;
+    const timer = setTimeout(() => setShowOutro(false), 4000)
+    return () => clearTimeout(timer)
+  }, [])
 
   return (
-    <div
-      ref={ref}
-      className={`absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center z-50 transition-opacity duration-1000 ${
-        isHidden ? "opacity-0" : "opacity-100"
-      }`}
-    >
-      {/* Wedding Background Video */}
-      <video
-        ref={videoRef}
-        autoPlay
-        muted
-        loop
-        playsInline
-        className="absolute top-0 left-0 w-full h-full object-cover"
-        onLoadedData={() => setIsVideoLoaded(true)}
-      >
-        <source src="/videos/lazy/lazybg1.mp4" type="video/mp4" />
-      </video>
-
-      {/* Elegant Overlay */}
-      {isVisible && (
-        <div className="flex flex-col items-center space-y-6">
-          {/* Couple Logo or Wedding Title */}
-          <Image
-            src="/nav-logo/faybe.png"
-            alt="Wedding Logo"
-            width={500}
-            height={500}
-            className="transition-opacity duration-1000 ease-in-out opacity-100 animate-pulse drop-shadow-lg"
+    <AnimatePresence>
+      {showOutro && (
+        <motion.div
+          className="fixed inset-0 flex items-center justify-center bg-black z-50 overflow-hidden"
+          initial={{ opacity: 1 }}
+          animate={{ opacity: 1 }}
+          exit={{ y: "-100%", opacity: 0 }}
+          transition={{ duration: 1, ease: "easeInOut" }}
+        >
+          {/* Background image that fills the screen */}
+          <motion.div
+            key={currentBg}
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url(${bgImages[currentBg]})` }}
+            initial={{ opacity: 0, scale: 1 }}
+            animate={{ opacity: 1, scale: 1.1 }} // subtle zoom
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1, ease: "easeInOut" }}
           />
-          <p className="text-lg md:text-2xl text-white/90 italic animate-fade-in delay-500">
-            Your Forever Begins Here
-          </p>
-        </div>
+
+          {/* Animated Text */}
+          <motion.h1
+            className="text-[18vw] md:text-[14vw] font-extrabold text-white tracking-tight relative z-10"
+            initial={{ scale: 1 }}
+            animate={{
+              scale: 5, // slowly fills screen
+              transition: { duration: 8, ease: "easeInOut" },
+            }}
+            exit={{ opacity: 0 }}
+          >
+            FAYBE
+          </motion.h1>
+        </motion.div>
       )}
-    </div>
-  );
+    </AnimatePresence>
+  )
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Review {
@@ -17,102 +18,153 @@ const reviews: Review[] = [
     coupleNames: "KRYSTAL & ALVIN",
     image: "/hero-page-img/1.jpg",
     testimonial:
-      'A huge thank you to the amazing team at Faybe Weddings and Events for making our wedding day truly beautiful.\n\nKasmooth gd sng tanan kay ara gd sila ga help and guide throughout the planning process. Even though both of us were overseas, their guidance and support made everything completely worry-free.\n\nTo the entire team, we are so grateful. Our wedding turned out just the way we had imagined. It was stress-free, and we felt completely at ease knowing you were always there in case anything unexpected came up especially sng wedding day. Both of us ni groom were just relax and happy kay we are confident nga successful ang wedding namun because Faybe Weddings are with us.\n\nEvery idea we had was brought to life, and you truly went above and beyond. Both our families and friends were saying, "kanami gd inyu wedding" "fun gd and smooth all through out inyu kasal" "nami inyu coordinator" For that, we will be forever thankful for all your efforts.\n\nOnce again, thank you so much Faybe Wedding and Events from the bottom of our hearts.',
-    signature: "Lovelots,\nMr. and Mrs Tay",
+      "A wedding is a beautiful story, and every love deserves to be told in the most magical way possible. Thank you for making ours unforgettable.",
+    signature: "With Love, Krystal & Alvin",
   },
   {
     id: 2,
-    coupleNames: "SARAH & MICHAEL",
+    coupleNames: "MARIA & JUAN",
     image: "/hero-page-img/2.jpg",
     testimonial:
-      "Working with Faybe Weddings was an absolute dream! From our first consultation to the last dance, every detail was perfectly executed.\n\nTheir team's creativity and attention to detail transformed our vision into reality. The coordination was flawless, and we could truly enjoy our special day without any worries.\n\nOur guests are still talking about how beautiful and well-organized everything was. Thank you for making our wedding day absolutely perfect!",
-    signature: "With love,\nSarah & Michael",
+      "From the first consultation to the last dance, everything was seamless. Our wedding looked straight out of a dream.",
+    signature: "Forever Grateful, Maria & Juan",
   },
   {
     id: 3,
-    coupleNames: "EMMA & JAMES",
+    coupleNames: "ANNA & LEO",
     image: "/hero-page-img/3.jpg",
     testimonial:
-      "Faybe Weddings exceeded all our expectations! Their professionalism and creativity made our wedding planning journey so enjoyable.\n\nEvery vendor they recommended was exceptional, and the timeline they created kept everything running smoothly. Our wedding was everything we dreamed of and more.\n\nWe cannot thank the entire team enough for their dedication and hard work. Highly recommend to any couple looking for their perfect day!",
-    signature: "Forever grateful,\nEmma & James",
+      "We couldn’t have asked for a more perfect day. Every detail was beautifully crafted, and the memories will last a lifetime.",
+    signature: "Always, Anna & Leo",
   },
 ];
 
-interface ThirdImageProps {
-  nextSectionId: string;
-}
+// 🔹 Variants for LEFT container (image block)
+const leftContainerVariants = {
+  enter: {
+    x: -300,
+    y: -200,
+    opacity: 0,
+  },
+  center: {
+    x: 0,
+    y: 0,
+    opacity: 1,
+    transition: { duration: 0.7, ease: "easeOut" as const },
+  },
+  exit: {
+    x: -300,
+    y: 200,
+    opacity: 0,
+    transition: { duration: 0.7, ease: "easeIn" as const },
+  },
+};
 
-export default function ThirdImage({ nextSectionId }: ThirdImageProps) {
-  const [currentReview, setCurrentReview] = useState(0);
+// 🔹 Variants for RIGHT container (testimonial block)
+const rightContainerVariants = {
+  enter: {
+    x: 300,
+    y: 200,
+    opacity: 0,
+  },
+  center: {
+    x: 0,
+    y: 0,
+    opacity: 1,
+    transition: { duration: 0.7, ease: "easeOut" as const },
+  },
+  exit: {
+    x: 300,
+    y: -200,
+    opacity: 0,
+    transition: { duration: 0.7, ease: "easeIn" as const },
+  },
+};
+
+
+export default function WeddingReviews() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const review = reviews[currentIndex];
 
   const nextReview = () => {
-    setCurrentReview((prev) => (prev + 1) % reviews.length);
+    setCurrentIndex((prev) => (prev + 1) % reviews.length);
   };
 
   const prevReview = () => {
-    setCurrentReview((prev) => (prev - 1 + reviews.length) % reviews.length);
+    setCurrentIndex((prev) => (prev - 1 + reviews.length) % reviews.length);
   };
 
-  const review = reviews[currentReview];
-
   return (
-    <main className="relative min-h-screen bg-gray-100" id="third-image">
-      {/* Reviews Header */}
+    <main
+      id="wedding-reviews"
+      className="relative min-h-screen w-full flex bg-black overflow-hidden margin-10 padding-10"
+    >
+      {/* 🔹 Background */}
+      <div className="absolute inset-0 bg-[url('/bg-texture.svg')] bg-cover bg-center opacity-40 z-0" />
+      <div className="absolute inset-0 bg-gray-900/60 z-0" />
 
-      {/* Main Content */}
-      <div className="flex min-h-screen">
-        {/* Left Side - Image */}
-        <div className="relative w-1/2 bg-black">
-          <div className="absolute top-8 right-8 z-10">
-            <h1 className="text-6xl bg-gradient-to-r from-yellow-100 via-yellow-400 to-yellow-700 bg-clip-text text-transparent drop-shadow-[0_2px_2px_rgba(0,0,0,0.7)] tracking-wider">
-              REVIEWS
-            </h1>
-          </div>
-          <img
-            src={review.image || "/placeholder.svg"}
-            alt={`Wedding photo of ${review.coupleNames}`}
-            className="w-full h-full object-cover"
-          />
+      {/* 🔹 Content */}
+      <div className="relative z-10 w-full h-full">
+        {/* REVIEWS Heading */}
+        <div className="absolute top-15 right-6">
+          <h1 className="text-4xl bg-gradient-to-r from-yellow-100 via-yellow-400 to-yellow-700 bg-clip-text text-transparent drop-shadow-[0_2px_2px_rgba(0,0,0,0.7)] tracking-wider">
+            REVIEWS
+          </h1>
+        </div>
 
-          {/* Couple Names and Navigation */}
-          <div className="absolute bottom-16 left-1/2 -translate-x-1/2 text-center">
-            <h2 className="text-2xl font-bold text-white mb-4 tracking-wider">
-              {review.coupleNames}
-            </h2>
+        {/* LEFT CONTAINER - Image */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={review.id + "-left"}
+            className="absolute top-20 left-20 w-[700px] h-[350px] rounded-2xl shadow-2xl overflow-hidden bg-black"
+            variants={leftContainerVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+          >
+            <img
+              src={review.image || "/placeholder.svg"}
+              alt={`Wedding photo of ${review.coupleNames}`}
+              className="w-full h-full object-cover"
+            />
+          </motion.div>
+        </AnimatePresence>
 
-            {/* Navigation Arrows */}
-            <div className="flex items-center justify-center gap-8">
-              <button
-                onClick={prevReview}
-                className="w-12 h-12 flex items-center justify-center text-white hover:bg-white/20 rounded-full transition-colors"
-                aria-label="Previous review"
-              >
-                <ChevronLeft size={24} />
-              </button>
+        {/* Names + Navigation */}
+        <div className="absolute top-[500px] left-20 w-[700px] flex flex-col items-center gap-4">
+          <h2 className="text-3xl font-semibold tracking-wide text-white drop-shadow-md">
+            {review.coupleNames}
+          </h2>
 
-              <button
-                onClick={nextReview}
-                className="w-12 h-12 flex items-center justify-center text-white hover:bg-white/20 rounded-full transition-colors"
-                aria-label="Next review"
-              >
-                <ChevronRight size={24} />
-              </button>
-            </div>
+          <div className="flex gap-6 mt-4">
+            <button onClick={prevReview} className="shadow-lg transition">
+              <ChevronLeft className="text-white hover:text-yellow-600" size={24} />
+            </button>
+            <button onClick={nextReview} className="shadow-lg transition">
+              <ChevronRight className="text-white hover:text-yellow-600" size={24} />
+            </button>
           </div>
         </div>
 
-        {/* Right Side - Testimonial */}
-        <div className="w-1/2 bg-gray-200 flex items-center justify-center p-16">
-          <div className="max-w-lg">
-            <div className="text-gray-700 text-base leading-relaxed mb-8 whitespace-pre-line">
-              {review.testimonial}
-            </div>
-
-            <div className="text-gray-600 text-sm whitespace-pre-line">
-              {review.signature}
-            </div>
-          </div>
-        </div>
+        {/* RIGHT CONTAINER - Testimonial */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={review.id + "-right"}
+            className="absolute top-30 right-20 w-[800px] h-[600px] bg-gray-200/70 rounded-2xl shadow-2xl p-10 flex flex-col justify-between"
+            variants={rightContainerVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+          >
+            <p className="text-lg italic text-gray-800">
+              “{review.testimonial}”
+            </p>
+            <span className="text-right font-semibold text-gray-900 mt-8">
+              — {review.signature}
+            </span>
+          </motion.div>
+        </AnimatePresence>
       </div>
     </main>
   );

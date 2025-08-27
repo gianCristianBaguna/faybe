@@ -1,120 +1,97 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useRef } from "react";
+import { motion, useAnimation, useInView, useTransform, useScroll } from "framer-motion";
 
 interface FirstImageProps {
   nextSectionId: string;
 }
 
+const images = [
+  { src: "/homescreen-second-img/1.jpg", href: "/gallery/details", alt: "Rings", side: "center", span: "col-span-2 aspect-[2/1]" },
+  { src: "/homescreen-second-img/2.jpg", href: "/gallery/indoor", alt: "Indoor", side: "left", span: "col-span-1 aspect-square" },
+  { src: "/homescreen-second-img/3.jpg", href: "/gallery/portraits", alt: "Bride", side: "right", span: "col-span-1 aspect-square" },
+  { src: "/homescreen-second-img/4.jpg", href: "/gallery/street", alt: "Street", side: "center", span: "col-span-1 md:col-span-2 aspect-[4/3]" },
+  { src: "/homescreen-second-img/5.jpg", href: "/gallery/destination", alt: "Boat", side: "center", span: "col-span-1 md:col-span-2 aspect-[4/3]" },
+  { src: "/homescreen-second-img/6.jpg", href: "/gallery/indoor", alt: "Indoor", side: "left", span: "col-span-1 aspect-square" },
+  { src: "/homescreen-second-img/7.jpg", href: "/gallery/portraits", alt: "Bride", side: "right", span: "col-span-1 aspect-square" },
+  { src: "/homescreen-second-img/8.jpg", href: "/gallery/details", alt: "Rings", side: "center", span: "col-span-2 aspect-[2/1]" },
+];
+
 export default function FirstImage({ nextSectionId }: FirstImageProps) {
+  const controls = useAnimation();
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const isInView = useInView(sectionRef, { amount: 0.3 }); // Trigger when 30% in view
+  const { scrollYProgress } = useScroll();
+
+  useEffect(() => {
+    if (isInView) {
+      controls.start({ opacity: 1, y: 0, transition: { duration: 0.8 } });
+    } else {
+      controls.start({ opacity: 0, y: 40, transition: { duration: 0.8 } });
+    }
+  }, [isInView, controls]);
+
+  // Function to return unique transforms per image
+  const getImageAnimation = (index: number, side: string) => {
+    let xTransform: import("framer-motion").MotionValue<number>;
+    let yTransform: import("framer-motion").MotionValue<number>;
+
+    if (side === "left") xTransform = useTransform(scrollYProgress, [0.1 * index, 0.3 + 0.1 * index], [-100, 0]);
+    else if (side === "right") xTransform = useTransform(scrollYProgress, [0.1 * index, 0.3 + 0.1 * index], [100, 0]);
+    else xTransform = useTransform(scrollYProgress, [0, 1], [0, 0]);
+
+    if (side === "center") yTransform = useTransform(scrollYProgress, [0.1 * index, 0.3 + 0.1 * index], [40, 0]);
+    else yTransform = useTransform(scrollYProgress, [0, 1], [0, 0]);
+
+    const scaleTransform = useTransform(scrollYProgress, [0.1 * index, 0.3 + 0.1 * index], [0.95, 1]);
+    const opacityTransform = useTransform(scrollYProgress, [0.05 * index, 0.5 + 0.05 * index], [0, 1]);
+
+    return { x: xTransform, y: yTransform, scale: scaleTransform, opacity: opacityTransform };
+  };
+
   return (
-    <main className="relative min-h-screen bg-black" id="next-section">
-      {/* Header Section */}
-      <div className="text-center py-12 px-4">
-        <h1
-          className="text-3xl md:text-4xl font-extrabold mb-4 
-               text-transparent 
-               bg-clip-text bg-gradient-to-r from-gray-300 to-gray-400
-               drop-shadow-[3px_4px_0_#CA8A04]"
-        >
-          Making Your Aspirations Possible
-        </h1>
-
-        <p className="text-lg text-white italic tracking-wide max-w-3xl mx-auto leading-relaxed">
-          A Decade of Love Stories — Crafting Beautiful Beginnings from 'Yes' to
-          'I DO'
+    <main ref={sectionRef} className="relative min-h-screen bg-black overflow-hidden" id={nextSectionId}>
+      {/* Header with scroll-triggered animation */}
+      <motion.div
+        className="text-center py-12 px-4"
+        animate={controls}
+        initial={{ opacity: 0, y: 40 }}
+      >
+        <h1 className="text-3xl text-white">Making Your Aspirations Possible</h1>
+        <p className="text-lg text-white italic tracking-wide max-w-3xl mx-auto leading-relaxed mt-4">
+          A Decade of Love Stories — Crafting Beautiful Beginnings from 'Yes' to 'I DO'
         </p>
-      </div>
+      </motion.div>
 
-      {/* Photo Grid - Full Width */}
+      {/* Photo Grid */}
       <div className="w-full pb-20 p-20 md:p-5">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
-          {/* Bottom row - 3 images */}
-          {/* Large bottom image spanning 2 columns */}
-          <div className="col-span-2 aspect-[2/1]">
-            <Link href="/gallery/details" className="block w-full h-full group">
-              <img
-                src="/hero-page-img/1.jpg"
-                alt="Wedding rings"
-                className="w-full h-full object-cover rounded-lg group-hover:scale-101 transition-transform duration-300"
-              />
-            </Link>
-          </div>{" "}
-          <div className="col-span-1 aspect-square">
-            <Link href="/gallery/indoor" className="block w-full h-full group">
-              <img
-                src="/hero-page-img/1.jpg"
-                alt="Indoor ceremony"
-                className="w-full h-full object-cover rounded-lg group-hover:scale-101 transition-transform duration-300"
-              />
-            </Link>
-          </div>
-          <div className="col-span-1 aspect-square">
-            <Link
-              href="/gallery/portraits"
-              className="block w-full h-full group"
-            >
-              <img
-                src="/hero-page-img/1.jpg"
-                alt="Bride portrait"
-                className="w-full h-full object-cover rounded-lg group-hover:scale-101 transition-transform duration-300"
-              />
-            </Link>
-          </div>
-          {/* Middle row - 2 medium images */}
-          <div className="col-span-1 md:col-span-2 aspect-[4/3]">
-            <Link href="/gallery/street" className="block w-full h-full group">
-              <img
-                src="/hero-page-img/3.jpg"
-                alt="Street wedding photo"
-                className="w-full h-full object-cover rounded-lg group-hover:scale-101 transition-transform duration-300"
-              />
-            </Link>
-          </div>
-          <div className="col-span-1 md:col-span-2 aspect-[4/3]">
-            <Link
-              href="/gallery/destination"
-              className="block w-full h-full group"
-            >
-              <img
-                src="/hero-page-img/2.jpg"
-                alt="Boat wedding ceremony"
-                className="w-full h-full object-cover rounded-lg group-hover:scale-101 transition-transform duration-300"
-              />
-            </Link>
-          </div>
-          {/* Bottom row - 3 images */}
-          <div className="col-span-1 aspect-square">
-            <Link href="/gallery/indoor" className="block w-full h-full group">
-              <img
-                src="/hero-page-img/1.jpg"
-                alt="Indoor ceremony"
-                className="w-full h-full object-cover rounded-lg group-hover:scale-101 transition-transform duration-300"
-              />
-            </Link>
-          </div>
-          <div className="col-span-1 aspect-square">
-            <Link
-              href="/gallery/portraits"
-              className="block w-full h-full group"
-            >
-              <img
-                src="/hero-page-img/1.jpg"
-                alt="Bride portrait"
-                className="w-full h-full object-cover rounded-lg group-hover:scale-101 transition-transform duration-300"
-              />
-            </Link>
-          </div>
-          {/* Large bottom image spanning 2 columns */}
-          <div className="col-span-2 aspect-[2/1]">
-            <Link href="/gallery/details" className="block w-full h-full group">
-              <img
-                src="/hero-page-img/1.jpg"
-                alt="Wedding rings"
-                className="w-full h-full object-cover rounded-lg group-hover:scale-101 transition-transform duration-300"
-              />
-            </Link>
-          </div>
+          {images.map((img, i) => {
+            const animation = getImageAnimation(i, img.side);
+            return (
+              <motion.div
+                key={i}
+                className={img.span}
+                style={{
+                  x: animation.x,
+                  y: animation.y,
+                  scale: animation.scale,
+                  opacity: animation.opacity,
+                }}
+              >
+                <Link href={img.href} className="block w-full h-full group">
+                  <motion.img
+                    src={img.src}
+                    alt={img.alt}
+                    className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-500"
+                    whileHover={{ scale: 1.05 }}
+                  />
+                </Link>
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </main>

@@ -23,7 +23,7 @@ export default function SecondImage({ image, nextSectionId }: FirstImageProps) {
         {/* View Albums Button */}
         <Link
           href="/gallery"
-          className="inline-block px-8 py-3 bg-transparent text-white rounded-lg shadow-lg transition hover:bg-gray-600"
+          className="inline-block px-8 py-3 bg-transparent text-white rounded-lg shadow-lg transition hover:bg-transparent/70 border border-white hover:border-yellow-400"
         >
           View Albums
         </Link>
