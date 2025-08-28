@@ -4,8 +4,11 @@ import { useState, useEffect } from "react";
 import HeroSection from "@/components/home-components/hero-section";
 import Lazy from "@/components/lazy-loading/lazy";
 import FirstImage from "@/components/home-components/first-image";
-import SecondImage from "@/components/home-components/second-image";
+import HorizontalScrollCarousel from "@/components/home-components/horizontal-sections";
 import ThirdImage from "@/components/home-components/third-image";
+import ServicesCarousel from "@/components/home-components/services-section";
+import CallToAction from "@/components/home-components/call-section";
+import Footer from "@/components/navigation/footer";
 
 export default function HomePage() {
   const [showHero, setShowHero] = useState(false);
@@ -13,7 +16,7 @@ export default function HomePage() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowHero(true);
-    }, 3500); 
+    }, 3500);
 
     return () => clearTimeout(timer);
   }, []);
@@ -25,11 +28,19 @@ export default function HomePage() {
           <>
             <HeroSection />
             <FirstImage nextSectionId="nextsectionId" />
-            <SecondImage
-              image="/hero-page-img/2.jpg"
-              nextSectionId="third-image"
+            <HorizontalScrollCarousel
+              images={[
+                "/hero-page-img/1.jpg",
+                "/hero-page-img/2.jpg",
+                "/hero-page-img/3.jpg",
+                "/homescreen-second-img/4.jpg",
+                "/homescreen-second-img/5.jpg",
+              ]}
             />
             <ThirdImage />
+            <ServicesCarousel />
+            <CallToAction />
+            <Footer />
           </>
         )}
       </div>

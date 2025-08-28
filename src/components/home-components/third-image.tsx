@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import Image from "next/image";
 
 interface Review {
   id: number;
@@ -39,76 +40,61 @@ const reviews: Review[] = [
   },
 ];
 
-// 🔹 Variants for LEFT container (image block)
+// 🔹 Variants for next/prev transitions
 const leftContainerVariants = {
-  enter: {
-    x: -300,
-    y: -200,
-    opacity: 0,
-  },
-  center: {
-    x: 0,
-    y: 0,
-    opacity: 1,
-    transition: { duration: 0.7, ease: "easeOut" as const },
-  },
-  exit: {
-    x: -300,
-    y: 200,
-    opacity: 0,
-    transition: { duration: 0.7, ease: "easeIn" as const },
-  },
+  enter: { x: -300, y: -200, opacity: 0 },
+  center: { x: 0, y: 0, opacity: 1, transition: { duration: 0.7, ease: "easeOut" as const } },
+  exit: { x: -300, y: 200, opacity: 0, transition: { duration: 0.7, ease: "easeIn" as const } },
 };
 
-// 🔹 Variants for RIGHT container (testimonial block)
 const rightContainerVariants = {
-  enter: {
-    x: 300,
-    y: 200,
-    opacity: 0,
-  },
-  center: {
-    x: 0,
-    y: 0,
-    opacity: 1,
-    transition: { duration: 0.7, ease: "easeOut" as const },
-  },
-  exit: {
-    x: 300,
-    y: -200,
-    opacity: 0,
-    transition: { duration: 0.7, ease: "easeIn" as const },
-  },
+  enter: { x: 300, y: 200, opacity: 0 },
+  center: { x: 0, y: 0, opacity: 1, transition: { duration: 0.7, ease: "easeOut" as const } },
+  exit: { x: 300, y: -200, opacity: 0, transition: { duration: 0.7, ease: "easeIn" as const } },
 };
 
+// 🔹 Variants for content in/out view
+const contentVariants = {
+  hidden: { opacity: 0, y: 50 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" as const } },
+  exit: { opacity: 0, y: 50, transition: { duration: 0.8, ease: "easeIn" as const } },
+};
 
 export default function WeddingReviews() {
   const [currentIndex, setCurrentIndex] = useState(0);
-
+  const [inView, setInView] = useState(false);
   const review = reviews[currentIndex];
 
-  const nextReview = () => {
-    setCurrentIndex((prev) => (prev + 1) % reviews.length);
-  };
-
-  const prevReview = () => {
-    setCurrentIndex((prev) => (prev - 1 + reviews.length) % reviews.length);
-  };
+  const nextReview = () => setCurrentIndex((prev) => (prev + 1) % reviews.length);
+  const prevReview = () => setCurrentIndex((prev) => (prev - 1 + reviews.length) % reviews.length);
 
   return (
-    <main
-      id="wedding-reviews"
-      className="relative min-h-screen w-full flex bg-black overflow-hidden margin-10 padding-10"
-    >
-      {/* 🔹 Background */}
-      <div className="absolute inset-0 bg-[url('/bg-texture.svg')] bg-cover bg-center opacity-40 z-0" />
-      <div className="absolute inset-0 bg-gray-900/60 z-0" />
+    <div className="relative min-h-screen w-full flex overflow-hidden">
+      {/* 🔹 Background Image (static) */}
+      <div className="absolute inset-0 z-0">
+        <Image
+          src="/homescreen-second-img/15.avif"
+          alt="Background"
+          fill
+          className="object-cover"
+          priority
+        />
+        <div className="absolute inset-0 bg-black/70" />
+      </div>
 
-      {/* 🔹 Content */}
-      <div className="relative z-10 w-full h-full">
+      {/* 🔹 Animated Content */}
+      <motion.div
+        className="relative z-10 w-full h-full"
+        variants={contentVariants}
+        initial="hidden"
+        animate={inView ? "visible" : "exit"}
+        onViewportEnter={() => setInView(true)}
+        onViewportLeave={() => setInView(false)}
+        viewport={{ amount: 0.5 }}
+      >
         {/* REVIEWS Heading */}
-        <div className="absolute top-15 right-6">
-          <h1 className="text-4xl bg-gradient-to-r from-yellow-100 via-yellow-400 to-yellow-700 bg-clip-text text-transparent drop-shadow-[0_2px_2px_rgba(0,0,0,0.7)] tracking-wider">
+        <div className="absolute top-16 left-1/2 transform -translate-x-1/2 sm:top-10">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl bg-gradient-to-r from-yellow-100 via-yellow-400 to-yellow-700 bg-clip-text text-transparent drop-shadow-md tracking-wider">
             REVIEWS
           </h1>
         </div>
@@ -117,7 +103,7 @@ export default function WeddingReviews() {
         <AnimatePresence mode="wait">
           <motion.div
             key={review.id + "-left"}
-            className="absolute top-20 left-20 w-[700px] h-[350px] rounded-2xl shadow-2xl overflow-hidden bg-black"
+            className="absolute top-28 left-1/2 transform -translate-x-1/2 sm:left-20 sm:translate-x-0 w-[90%] sm:w-[700px] h-[250px] sm:h-[400px] rounded-2xl shadow-2xl overflow-hidden bg-black"
             variants={leftContainerVariants}
             initial="enter"
             animate="center"
@@ -132,12 +118,12 @@ export default function WeddingReviews() {
         </AnimatePresence>
 
         {/* Names + Navigation */}
-        <div className="absolute top-[500px] left-20 w-[700px] flex flex-col items-center gap-4">
-          <h2 className="text-3xl font-semibold tracking-wide text-white drop-shadow-md">
+        <div className="absolute top-[320px] sm:top-[600px] left-1/2 transform -translate-x-1/2 sm:left-20 sm:translate-x-0 w-[90%] sm:w-[700px] flex flex-col items-center sm:items-start gap-4">
+          <h2 className="text-2xl sm:text-3xl font-semibold tracking-wide text-white drop-shadow-md text-center sm:text-left">
             {review.coupleNames}
           </h2>
 
-          <div className="flex gap-6 mt-4">
+          <div className="flex gap-6 mt-4 justify-center sm:justify-start">
             <button onClick={prevReview} className="shadow-lg transition">
               <ChevronLeft className="text-white hover:text-yellow-600" size={24} />
             </button>
@@ -151,21 +137,21 @@ export default function WeddingReviews() {
         <AnimatePresence mode="wait">
           <motion.div
             key={review.id + "-right"}
-            className="absolute top-30 right-20 w-[800px] h-[600px] bg-gray-200/70 rounded-2xl shadow-2xl p-10 flex flex-col justify-between"
+            className="absolute top-[600px] sm:top-30 right-1/2 transform -translate-x-1/2 sm:right-20 sm:translate-x-0 w-[90%] sm:w-[800px] h-[300px] sm:h-[500px] bg-gray-200/70 rounded-2xl shadow-2xl p-6 sm:p-10 flex flex-col justify-between"
             variants={rightContainerVariants}
             initial="enter"
             animate="center"
             exit="exit"
           >
-            <p className="text-lg italic text-gray-800">
+            <p className="text-base sm:text-lg italic text-gray-800">
               “{review.testimonial}”
             </p>
-            <span className="text-right font-semibold text-gray-900 mt-8">
+            <span className="text-right font-semibold text-gray-900 mt-4 sm:mt-8">
               — {review.signature}
             </span>
           </motion.div>
         </AnimatePresence>
-      </div>
-    </main>
+      </motion.div>
+    </div>
   );
 }
